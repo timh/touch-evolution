@@ -13,11 +13,9 @@
 
 @synthesize window;
 @synthesize glView;
-@synthesize labelView;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions   
 {
-    [glView setTextView:labelView];
     [glView startAnimation];
     return YES;
 }

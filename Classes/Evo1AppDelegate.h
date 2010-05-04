@@ -8,17 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@class EAGLView;
+@class GLSuperView;
 
 @interface Evo1AppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
-    EAGLView *glView;
-    UILabel *labelView;
+    GLSuperView *glView;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) IBOutlet EAGLView *glView;
-@property (nonatomic, retain) IBOutlet UILabel *labelView;
+@property (nonatomic, retain) IBOutlet GLSuperView *glView;
 
 @end
 

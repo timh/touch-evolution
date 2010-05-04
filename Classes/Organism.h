@@ -21,5 +21,6 @@
 - (Organism*) mate:(Organism*)otherOrg andMutate:(BOOL)doMutate withWorld:(WorldParams*)world;
 - (void) addGene:(id<Gene>)gene;
 - (Organism*) cloneEmptyOrganism;
+- (NSString*) short_description;
 
 @end

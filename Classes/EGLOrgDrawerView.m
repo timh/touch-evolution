@@ -1,14 +1,14 @@
 //
-//  ES1Renderer.m
+//  EGLOrgDrawerView.m
 //  Evo1
 //
-//  Created by Tim Hinderliter on 4/25/10.
-//  Copyright __MyCompanyName__ 2010. All rights reserved.
+//  Created by Tim Hinderliter on 5/3/10.
+//  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
-#import "ES1Renderer.h"
+#import "EGLOrgDrawerView.h"
 
-@implementation ES1Renderer
+@implementation EGLOrgDrawerView
 
 // Create an OpenGL ES 1.1 context
 - (id)init
@@ -16,13 +16,13 @@
     if ((self = [super init]))
     {
         context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
-
+        
         if (!context || ![EAGLContext setCurrentContext:context])
         {
             [self release];
             return nil;
         }
-
+        
         // Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
         glGenFramebuffersOES(1, &defaultFramebuffer);
         glGenRenderbuffersOES(1, &colorRenderbuffer);
@@ -30,75 +30,45 @@
         glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
         glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, colorRenderbuffer);
     }
-
+    
     return self;
 }
 
-- (void)render
+- (id) initWithCoder:(NSCoder *)aDecoder {
+    
+    return [self init];
+}
+
+
+- (int)drawOrganism:(DrawOrganism*)organism andClear:(BOOL)shouldClear withColor:(GLfloat[4])color
 {
-    // Replace the implementation of this method to do your own custom drawing
-
-    static const GLfloat squareVertices[] = {
-        -0.5f,  -0.33f,
-         0.5f,  -0.33f,
-        -0.5f,   0.33f,
-         0.5f,   0.33f,
-    };
-
-    static const GLubyte squareColors[] = {
-        255, 255,   0, 255,
-        0,   255, 255, 255,
-        0,     0,   0,   0,
-        255,   0, 255, 255,
-    };
-
-    static float transY = 0.0f;
-
-    // This application only creates a single context which is already set current at this point.
-    // This call is redundant, but needed if dealing with multiple contexts.
     [EAGLContext setCurrentContext:context];
-
+    
     // This application only creates a single default framebuffer which is already bound at this point.
     // This call is redundant, but needed if dealing with multiple framebuffers.
     glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
-    glViewport(0, 0, backingWidth, backingHeight-100);
+    glViewport(0, 0, backingWidth, backingHeight);
 
-    if (true) {
-        // DO NOTHING, it's all done in DrawOrganism
-    }
-    else {
-        // old example code
+    // Clear, set color, set basic identity matrices.
+    if (shouldClear) {
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glTranslatef(0.0f, (GLfloat)(sinf(transY)/2.0f), 0.0f);
-        transY += 0.075f;
-
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glVertexPointer(2, GL_FLOAT, 0, squareVertices);
         glEnableClientState(GL_VERTEX_ARRAY);
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, squareColors);
-        glEnableClientState(GL_COLOR_ARRAY);
-
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glScalef(0.10f, 0.10f, 1.0f);
     }
-
-    // This application only creates a single color renderbuffer which is already bound at this point.
-    // This call is redundant, but needed if dealing with multiple renderbuffers.
+    glColor4f(color[0], color[1], color[2], color[3]);
+    
+    // Draw it.
+    int resultNumDraws = [organism drawGL];
+    
     glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
     [context presentRenderbuffer:GL_RENDERBUFFER_OES];
-}
-
-- (void)displayHack
-{
-    // This application only creates a single color renderbuffer which is already bound at this point.
-    // This call is redundant, but needed if dealing with multiple renderbuffers.
-    glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
-    [context presentRenderbuffer:GL_RENDERBUFFER_OES];
-
+    
+    return resultNumDraws;
 }
 
 - (BOOL)resizeFromLayer:(CAEAGLLayer *)layer
@@ -108,13 +78,13 @@
     [context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:layer];
     glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
     glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
-
+    
     if (glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) != GL_FRAMEBUFFER_COMPLETE_OES)
     {
         NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
         return NO;
     }
-
+    
     return YES;
 }
 
@@ -126,20 +96,20 @@
         glDeleteFramebuffersOES(1, &defaultFramebuffer);
         defaultFramebuffer = 0;
     }
-
+    
     if (colorRenderbuffer)
     {
         glDeleteRenderbuffersOES(1, &colorRenderbuffer);
         colorRenderbuffer = 0;
     }
-
+    
     // Tear down context
     if ([EAGLContext currentContext] == context)
         [EAGLContext setCurrentContext:nil];
-
+    
     [context release];
     context = nil;
-
+    
     [super dealloc];
 }
 
