@@ -7,10 +7,13 @@
 //
 
 
+#import <OpenGLES/ES1/gl.h>
+
 @interface DrawState : NSObject {
 	CGPoint translate;
 	CGPoint scale;
-	CGFloat rotate;
+	GLfloat rotate;
+    GLfloat* color;
 }
 
 - (DrawState*) init;
@@ -18,9 +21,10 @@
 
 - (CGPoint) translate:(CGPoint)offset;
 - (CGPoint) scale:(CGPoint)toScale;
-- (CGFloat) rotate:(CGFloat)toRotate;
+- (GLfloat) rotate:(GLfloat)toRotate;
 
 @property(readonly, nonatomic) CGPoint translate;
+@property(readwrite, nonatomic) GLfloat* color;
 
 @end
 
@@ -40,9 +44,9 @@ typedef enum _CompareResult {
 @property(nonatomic, readonly) CompareResult lastCompareResult;
 
 - (MachineState*) init;
-- (CGFloat) push:(CGFloat)number;
-- (CGFloat) pop;
-- (CGFloat) peek:(int)index;
+- (GLfloat) push:(GLfloat)number;
+- (GLfloat) pop;
+- (GLfloat) peek:(int)index;
 - (void) clone:(int)num;
 - (void) compareTopTwo;
 

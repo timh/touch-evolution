@@ -34,7 +34,9 @@
 	IBOutlet UILabel *textView;
 	
 	WorldParams * world;
-	DrawOrganism * org1, * org2;
+    NSMutableArray * orgs;
+    BOOL * orgSelected;
+    NSMutableString * status;
 }
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;

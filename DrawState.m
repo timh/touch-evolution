@@ -16,10 +16,20 @@
 		self->rotate = 0.0f;
 		self->scale.x = self->scale.y = 1.0f;
 		self->translate.x = self->translate.y = 0.0f;
-		
+		self->color = malloc(sizeof(GLfloat) * 4);
+        self->color[0] = self->color[1] = self->color[2] = self->color[3] = 1;
 	}
 	return self;
 }
+
+- (void) dealloc {
+    free(self->color);
+    [super dealloc];
+}
+
+@synthesize translate;
+@synthesize color;
+
 
 - (CGPoint) transformedPoint:(CGPoint)point {
     CGPoint res;
@@ -41,15 +51,13 @@
 	return self->translate;
 }
 
-@synthesize translate;
-
 - (CGPoint) scale:(CGPoint)toScale {
 	self->scale.x *= toScale.x;
 	self->scale.y *= toScale.y;
 	return self->scale;
 }
 
-- (CGFloat) rotate:(CGFloat)toRotate {
+- (GLfloat) rotate:(GLfloat)toRotate {
 	self->rotate += toRotate;
 	return self->rotate;
 }
@@ -82,13 +90,13 @@
 	[super dealloc];
 }
 
-- (CGFloat) push:(CGFloat)number {
+- (GLfloat) push:(GLfloat)number {
 	[stack addObject:[NSNumber numberWithFloat:number]];
 	return number;
 }
 
-- (CGFloat) pop {
-	CGFloat res = 0;
+- (GLfloat) pop {
+	GLfloat res = 0;
 	if ([stack count] > 0) {
 		res = [self peek:0];
 		[stack removeLastObject];
@@ -96,8 +104,8 @@
 	return res;
 }
 	
-- (CGFloat) peek:(int)index {
-	CGFloat res = 0;
+- (GLfloat) peek:(int)index {
+	GLfloat res = 0;
 	if ([stack count] > index) {
 		NSNumber * numLast = [stack objectAtIndex:([stack count] - index - 1)];
 		res = [numLast floatValue];
@@ -114,8 +122,8 @@
 }
 
 - (void) compareTopTwo {
-	CGFloat one = [self pop];
-	CGFloat two = [self pop];
+	GLfloat one = [self pop];
+	GLfloat two = [self pop];
 	
 	if (one < two) {
 		self->lastCompareResult = LESSTHAN;

@@ -15,14 +15,24 @@
 
 @implementation DrawOrganism
 
-- (CGFloat) drawGL {
-	MachineState* machine = [MachineState new];
+
+- (GLfloat) drawGL {
 	DrawState* drawState = [DrawState new];
+    GLfloat result = [self drawGLWithState:drawState];
+    [drawState release];
     
-//    NSString *drewIt = @"";
+    return result;
+}
+
+    
+- (GLfloat) drawGLWithState:(DrawState*)drawState {
+	MachineState* machine = [MachineState new];
     
     CGFloat minX = 0, minY = 0;
     CGFloat maxX = 0, maxY = 0;
+    
+    GLfloat* color = drawState.color;
+    glColor4f(drawState.color[0], drawState.color[1], drawState.color[2], drawState.color[3]);
 
     int numStepsExecuted = 0;
 	int index, nextIndex = 0;
@@ -130,8 +140,6 @@
                 glVertexPointer(2, GL_FLOAT, 0, vertices);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 3);
                 
-                //drewIt = [NSString stringWithFormat:@"%@drew %f,%f -- %f,%f -- %f,%f || ",
-                //          drewIt, vertices[0], vertices[1], vertices[2], vertices[3], vertices[4], vertices[5]];
 				break;
             }
                 
@@ -140,14 +148,8 @@
 		}
 	}
     
-//    NSString* result = [NSString stringWithFormat:@"end result (DRAW %@) (MACHINE %@) %@",
-//                        drawState, machine, drewIt];
-    
     [machine release];
-    [drawState release];
     
-    //return result;
-    // return range of places drawn.
     return (maxX - minX) + (maxY - minY);
 }
 

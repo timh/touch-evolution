@@ -6,12 +6,15 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
+#import <OpenGLES/ES1/gl.h>
 #import "Organism.h"
+#import "DrawState.h"
 
 @interface DrawOrganism : Organism {
 
 }
 
-- (CGFloat) drawGL;
+- (GLfloat) drawGL;
+- (GLfloat) drawGLWithState:(DrawState*)drawState;
 
 @end

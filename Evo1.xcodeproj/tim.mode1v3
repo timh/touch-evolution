@@ -277,7 +277,8 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>37</integer>
+									<integer>19</integer>
+									<integer>15</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -331,23 +332,24 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>2247AFDE118FD45F003ACCF0</string>
+										<string>2247B09C11900F7D003ACCF0</string>
 										<key>history</key>
 										<array>
 											<string>2291BC22118AB97F004B470A</string>
-											<string>2247AE79118EBB9B003ACCF0</string>
-											<string>2247AE7A118EBB9B003ACCF0</string>
-											<string>2247AEC5118EC250003ACCF0</string>
 											<string>2247AF3A118FCC55003ACCF0</string>
 											<string>2247AF55118FCDDF003ACCF0</string>
-											<string>2247AF56118FCDDF003ACCF0</string>
 											<string>2247AF59118FCDDF003ACCF0</string>
-											<string>2247AF8D118FD0C8003ACCF0</string>
-											<string>2247AF9C118FD144003ACCF0</string>
 											<string>2247AFD1118FD41F003ACCF0</string>
-											<string>2247AFD3118FD41F003ACCF0</string>
 											<string>2247AFD9118FD445003ACCF0</string>
-											<string>2247AFDA118FD445003ACCF0</string>
+											<string>2247B03811900649003ACCF0</string>
+											<string>2247B03911900649003ACCF0</string>
+											<string>2247B03A11900649003ACCF0</string>
+											<string>2247B03C11900649003ACCF0</string>
+											<string>2247B04C119006D7003ACCF0</string>
+											<string>2247B04D119006D7003ACCF0</string>
+											<string>2247B04F11900747003ACCF0</string>
+											<string>2247B08A11900E53003ACCF0</string>
+											<string>2247B08B11900E53003ACCF0</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -545,6 +547,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
+		<string>2291BCFC118C0279004B470A</string>
 		<string>2247AD6C118E9EE9003ACCF0</string>
 		<string>2247AD5F118E9E80003ACCF0</string>
 		<string>1C78EAAD065D492600B07095</string>
@@ -1421,7 +1424,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>2291BCFC118C0279004B470A</string>
-				<string>2291BCFD118C0279004B470A</string>
+				<string>2247AFEE118FDA59003ACCF0</string>
 				<string>2291BCFB118C0279004B470A</string>
 			</array>
 			<key>WindowString</key>

@@ -40,7 +40,7 @@
 }
 
 
-- (int)drawOrganism:(DrawOrganism*)organism andClear:(BOOL)shouldClear withColor:(GLfloat[4])color
+- (GLfloat)drawOrganism:(DrawOrganism*)organism andClear:(BOOL)shouldClear withState:(DrawState*)state
 {
     [EAGLContext setCurrentContext:context];
     
@@ -51,19 +51,18 @@
 
     // Clear, set color, set basic identity matrices.
     if (shouldClear) {
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         glEnableClientState(GL_VERTEX_ARRAY);
-        glScalef(0.10f, 0.10f, 1.0f);
+        //glScalef(0.10f, 0.10f, 1.0f);
     }
-    glColor4f(color[0], color[1], color[2], color[3]);
     
     // Draw it.
-    int resultNumDraws = [organism drawGL];
+    GLfloat resultNumDraws = [organism drawGLWithState:state];
     
     glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
     [context presentRenderbuffer:GL_RENDERBUFFER_OES];
