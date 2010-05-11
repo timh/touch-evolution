@@ -46,5 +46,6 @@
 - (void)stopAnimation;
 - (void)drawView:(id)sender;
 - (void)setTextView:(UILabel*)label;
+- (DrawOrganism*) newRandomOrg;
 
 @end

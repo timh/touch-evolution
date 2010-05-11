@@ -15,6 +15,7 @@
 
 @implementation DrawOrganism
 
+@synthesize fitness;
 
 - (GLfloat) drawGL {
 	DrawState* drawState = [DrawState new];
@@ -150,7 +151,8 @@
     
     [machine release];
     
-    return (maxX - minX) + (maxY - minY);
+    fitness = (maxX - minX) + (maxY - minY);
+    return fitness;
 }
 
 

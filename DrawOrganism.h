@@ -11,8 +11,10 @@
 #import "DrawState.h"
 
 @interface DrawOrganism : Organism {
-
+    GLfloat fitness;
 }
+
+@property(readonly, nonatomic) GLfloat fitness;
 
 - (GLfloat) drawGL;
 - (GLfloat) drawGLWithState:(DrawState*)drawState;

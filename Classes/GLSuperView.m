@@ -44,7 +44,7 @@
         displayLink = nil;
         animationTimer = nil;
         
-        status = @"";
+        status = [NSMutableString stringWithString:@""];
         
         // A system version of 3.1 or greater is required to use CADisplayLink. The NSTimer
         // class is used as fallback when it isn't available.
@@ -60,18 +60,12 @@
         orgSelected = (BOOL*) malloc(sizeof(BOOL) * NUM_ORGS);
         
         for (int i = 0; i < NUM_ORGS; i ++) {
-            DrawOrganism* newOrg = [[DrawOrganism alloc] initEmpty];
+            DrawOrganism* newOrg = [self newRandomOrg];
 
             [orgs addObject:newOrg];
             [newOrg release];
             
             orgSelected[i] = FALSE;
-            
-            for (int gene = 0; gene < 300; gene ++) {
-                DrawGene* newGene = [DrawGene randomGene];
-                [newOrg addGene:newGene];
-                [newGene release];
-            }
 		}
         
     }
@@ -79,30 +73,66 @@
     return self;
 }
 
+- (DrawOrganism*) newRandomOrg
+{
+    DrawOrganism* newOrg = [[DrawOrganism alloc] initEmpty];
+    
+    for (int gene = 0; gene < 300; gene ++) {
+        DrawGene* newGene = [DrawGene randomGene];
+        [newOrg addGene:newGene];
+        [newGene release];
+    }
+    
+    return newOrg;
+}
+
+
 -(void) dealloc {
     [orgs release];
     [status release];
     [super dealloc];
 }
 
+- (void)doMatingDance
+{
+    NSMutableArray* keptOrgs = [NSMutableArray array];
+    
+    for (int orgIdx = 0; orgIdx < NUM_ORGS; orgIdx ++) {
+        DrawOrganism* org = [orgs objectAtIndex:orgIdx];
+        
+        if (orgSelected[orgIdx]) {
+            [keptOrgs addObject:org];
+        }
+    }
+    
+    for (int orgIdx = 0; orgIdx < NUM_ORGS; orgIdx ++) {
+        DrawOrganism* org = [orgs objectAtIndex:orgIdx];
+
+        if (!orgSelected[orgIdx]) {
+            if ([keptOrgs count] > 0) {
+                DrawOrganism* org1 = [keptOrgs objectAtIndex:(random() % [keptOrgs count])];
+                DrawOrganism* org2 = [keptOrgs objectAtIndex:(random() % [keptOrgs count])];
+                
+                DrawOrganism* newChild = [[org1 mate:org2 andMutate:TRUE withWorld:world] autorelease];
+                
+                [orgs replaceObjectAtIndex:orgIdx withObject:newChild];
+            }
+            else {
+                DrawOrganism* newChild = [[self newRandomOrg] autorelease];
+                [orgs replaceObjectAtIndex:orgIdx withObject:newChild];
+            }
+        }
+    }
+}
+
 - (void)drawView:(id)sender
 {
-    DrawOrganism* org1 = [orgs objectAtIndex:(random() % NUM_ORGS)];
-    DrawOrganism* org2 = [orgs objectAtIndex:(random() % NUM_ORGS)];
-    
-    DrawOrganism* child = [org1 mate:org2 andMutate:true withWorld:world];
-
     GLfloat red[] = { 1.0f, 0.0f, 0.0f, 1.0f };
     //GLfloat green[] = { 0.0f, 1.0f, 0.0f, 1.0f };
     //GLfloat yellow[] = { 1.0f, 1.0f, 0.0f, 1.0f };
         
-    DrawOrganism* killit = nil;
-    CGFloat worstFitness = 0;
-    int worstOrgIndex = 0;
-    
     NSMutableString* orgStr = [NSMutableString string];
     NSMutableString* selStr = [NSMutableString string];
-    CGFloat fitness[NUM_ORGS];
     GLfloat columnWidth = 2.0f / (GLfloat)ORGSX;
     GLfloat rowHeight = 2.0f / (GLfloat)ORGSY;
     
@@ -117,43 +147,16 @@
             
             DrawOrganism* org = [orgs objectAtIndex:orgIdx];
             
-            fitness[orgIdx] = [orgView drawOrganism:org andClear:(orgIdx == 0) withState:drawState];
+            [orgView drawOrganism:org andClear:(orgIdx == 0) withState:drawState];
             
             [selStr appendFormat:@"org %d %@, ", orgIdx, orgSelected[orgIdx] ? @"sel" : @""];
-            [orgStr appendFormat:@"org %d: fitness %.2f: %@\n", orgIdx, fitness[orgIdx], [org short_description]];
+            [orgStr appendFormat:@"org %d: fitness %.2f: %@\n", orgIdx, org.fitness, [org short_description]];
 
-            
-            if (killit == nil || fitness[orgIdx] < worstFitness) {
-                worstFitness = fitness[orgIdx];
-                worstOrgIndex = orgIdx;
-                killit = org;
-            }
-            
             [drawState release];
-            
-            // draw the child in the last slot .. this is wonky.
-            if (orgIdx == NUM_ORGS - 1) {
-                DrawState* childDrawState = [DrawState new];
-                [childDrawState translate:CGPointMake(-1, -1)];
-                [childDrawState translate:CGPointMake(columnWidth * orgX + columnWidth/2, rowHeight * orgY + 1*rowHeight/4)];
-                [childDrawState scale:CGPointMake(.10f, .10f)];
-                childDrawState.color = red;
-                
-                GLfloat childFitness = [orgView drawOrganism:child andClear:FALSE withState:childDrawState];
-                [orgStr appendFormat:@"child: fitness %.2f: %@\n", childFitness, [child short_description]];
-                if (childFitness < worstFitness) {
-                    killit = child;
-                }
-                [childDrawState release];
-            }
         }
     }
     
     textView.text = [NSString stringWithFormat:@"%@%@%@", status, selStr, orgStr];
-    
-    if (killit != child) {
-        [orgs replaceObjectAtIndex:worstOrgIndex withObject:child];
-    }
 }
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
