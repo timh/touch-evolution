@@ -13,7 +13,7 @@
 	CGPoint translate;
 	CGPoint scale;
 	GLfloat rotate;
-    GLfloat* color;
+    GLfloat color[4];
 }
 
 - (DrawState*) init;

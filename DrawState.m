@@ -8,7 +8,6 @@
 
 #import "DrawState.h"
 
-
 @implementation DrawState
 
 - (DrawState*) init {
@@ -16,20 +15,28 @@
 		self->rotate = 0.0f;
 		self->scale.x = self->scale.y = 1.0f;
 		self->translate.x = self->translate.y = 0.0f;
-		self->color = malloc(sizeof(GLfloat) * 4);
         self->color[0] = self->color[1] = self->color[2] = self->color[3] = 1;
+        
 	}
 	return self;
 }
 
 - (void) dealloc {
-    free(self->color);
     [super dealloc];
 }
 
 @synthesize translate;
-@synthesize color;
+//@synthesize color;
+- (GLfloat*) color {
+    return self->color;
+}
 
+- (void) setColor:(GLfloat*)col {
+    self->color[0] = col[0];
+    self->color[1] = col[1];
+    self->color[2] = col[2];
+    self->color[3] = col[3];
+}
 
 - (CGPoint) transformedPoint:(CGPoint)point {
     CGPoint res;

@@ -14,9 +14,10 @@
 @synthesize animating;
 @dynamic animationFrameInterval;
 
-#define ORGSX 3
-#define ORGSY 3
+#define ORGSX 4
+#define ORGSY 4
 #define NUM_ORGS ORGSX*ORGSY
+#define STATUS_HEIGHT_PERCENTAGE .15
 
 // You must implement this method
 + (Class)layerClass
@@ -44,7 +45,7 @@
         displayLink = nil;
         animationTimer = nil;
         
-        status = [NSMutableString stringWithString:@""];
+        status = [NSMutableString new];
         
         // A system version of 3.1 or greater is required to use CADisplayLink. The NSTimer
         // class is used as fallback when it isn't available.
@@ -77,7 +78,7 @@
 {
     DrawOrganism* newOrg = [[DrawOrganism alloc] initEmpty];
     
-    for (int gene = 0; gene < 300; gene ++) {
+    for (int gene = 0; gene < 500; gene ++) {
         DrawGene* newGene = [DrawGene randomGene];
         [newOrg addGene:newGene];
         [newGene release];
@@ -134,28 +135,32 @@
     NSMutableString* orgStr = [NSMutableString string];
     NSMutableString* selStr = [NSMutableString string];
     GLfloat columnWidth = 2.0f / (GLfloat)ORGSX;
-    GLfloat rowHeight = 2.0f / (GLfloat)ORGSY;
+    GLfloat rowHeight = (2.0f / (GLfloat)ORGSY) * (1.0 - STATUS_HEIGHT_PERCENTAGE); // save 30% for other stuff.
     
     for (int orgY = 0; orgY < ORGSY; orgY ++) {
         for (int orgX = 0; orgX < ORGSX; orgX ++) {
             int orgIdx = orgY * ORGSX + orgX;
             
             DrawState* drawState = [DrawState new];
-            [drawState translate:CGPointMake(-1, -1)];
-            [drawState translate:CGPointMake(columnWidth * orgX + columnWidth/2, rowHeight * orgY + rowHeight/2)];
-            [drawState scale:CGPointMake(.10f, .10f)];
-            
+            // start at the upper-left corner, and move right and down. down is negative,
+            // so negate the rowHeight calculation.
+            [drawState translate:CGPointMake(-1, 1)];
+            [drawState translate:CGPointMake(columnWidth * orgX + columnWidth/2, -(rowHeight * orgY + rowHeight/2))];
+            [drawState scale:CGPointMake(.10f, .10f * STATUS_HEIGHT_PERCENTAGE)];
             DrawOrganism* org = [orgs objectAtIndex:orgIdx];
             
+            if (orgSelected[orgIdx]) {
+                [drawState setColor:red];
+            }
             [orgView drawOrganism:org andClear:(orgIdx == 0) withState:drawState];
             
-            [selStr appendFormat:@"org %d %@, ", orgIdx, orgSelected[orgIdx] ? @"sel" : @""];
+            [selStr appendFormat:@"%2d%@ ", orgIdx, orgSelected[orgIdx] ? @"*" : @" "];
             [orgStr appendFormat:@"org %d: fitness %.2f: %@\n", orgIdx, org.fitness, [org short_description]];
-
+            
             [drawState release];
         }
     }
-    
+
     textView.text = [NSString stringWithFormat:@"%@%@%@", status, selStr, orgStr];
 }
 
@@ -165,15 +170,41 @@
     CGRect bounds = [self bounds];
     
     int xpos = (int) ((float) ORGSX * location.x  / (float) bounds.size.width);
-    int ypos = (int) ((float) ORGSY * location.y  / (float) bounds.size.height);
+    int ypos = (int) ((float) ORGSY * location.y  / (float) bounds.size.height / (1.0 - STATUS_HEIGHT_PERCENTAGE));
+    
+    NSString* otherStatus = nil;
     
     if (xpos < ORGSX && ypos < ORGSY) {
         int idx = ypos*ORGSX+xpos;
         orgSelected[idx] = !orgSelected[idx];
+        otherStatus = [NSString stringWithFormat:@"org click, idx = %d", idx];
+    }
+    else if (xpos < ORGSX && ypos >= ORGSY) {
+        if (xpos == 0) {
+            otherStatus = @"resetting all";
+            
+            int orgIdx;
+            for (orgIdx < 0; orgIdx < NUM_ORGS; orgIdx ++) {
+                if (!orgSelected[orgIdx]) {
+                    [orgs replaceObjectAtIndex:orgIdx withObject:[self newRandomOrg]];
+                    orgSelected[orgIdx] = FALSE;
+                }
+            }
+            
+        }
+        else if (xpos == 1) {
+            otherStatus = @"mating";
+            
+            [self doMatingDance];
+        }
+        else {
+            // nothing, just redraw
+            otherStatus = @"redraw";
+        }
+
     }
     
-    status = [NSString stringWithFormat:@"xpos = %d, ypos = %d :: location.x = %f, location.y = %f\n", xpos, ypos, location.x, location.y];
-    
+    status = [NSString stringWithFormat:@"%@ -- xpos = %d, ypos = %d :: location.x = %f, location.y = %f\n", otherStatus, xpos, ypos, location.x, location.y];
     [self drawView:nil];
 }
 

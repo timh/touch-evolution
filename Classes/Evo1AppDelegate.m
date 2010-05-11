@@ -7,7 +7,6 @@
 //
 
 #import "Evo1AppDelegate.h"
-#import "EAGLView.h"
 
 @implementation Evo1AppDelegate
 
