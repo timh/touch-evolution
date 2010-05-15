@@ -152,7 +152,13 @@
             if (orgSelected[orgIdx]) {
                 [drawState setColor:red];
             }
-            [orgView drawOrganism:org andClear:(orgIdx == 0) withState:drawState];
+            if (orgIdx == 0) {
+                [orgView clear];
+            }
+            [orgView drawOrganism:org withState:drawState];
+            if (orgX == ORGSX-1 && orgY == ORGSY-1) {
+                [orgView present];
+            }
             
             [selStr appendFormat:@"%2d%@ ", orgIdx, orgSelected[orgIdx] ? @"*" : @" "];
             [orgStr appendFormat:@"org %d: fitness %.2f: %@\n", orgIdx, org.fitness, [org short_description]];
@@ -183,11 +189,9 @@
         if (xpos == 0) {
             otherStatus = @"resetting all";
             
-            int orgIdx;
-            for (orgIdx < 0; orgIdx < NUM_ORGS; orgIdx ++) {
+            for (int orgIdx = 0; orgIdx < NUM_ORGS; orgIdx ++) {
                 if (!orgSelected[orgIdx]) {
                     [orgs replaceObjectAtIndex:orgIdx withObject:[self newRandomOrg]];
-                    orgSelected[orgIdx] = FALSE;
                 }
             }
             

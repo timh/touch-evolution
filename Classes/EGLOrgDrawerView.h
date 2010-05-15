@@ -26,6 +26,8 @@
 }
     
 - (BOOL)resizeFromLayer:(CAEAGLLayer *)layer;
-- (GLfloat)drawOrganism:(DrawOrganism*)organism andClear:(BOOL)shouldClear withState:(DrawState*)state;
+- (GLfloat)drawOrganism:(DrawOrganism*)organism withState:(DrawState*)state;
+- (void)clear;
+- (void)present;
 
 @end

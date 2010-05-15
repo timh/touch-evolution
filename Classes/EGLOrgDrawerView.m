@@ -40,33 +40,36 @@
 }
 
 
-- (GLfloat)drawOrganism:(DrawOrganism*)organism andClear:(BOOL)shouldClear withState:(DrawState*)state
-{
-    [EAGLContext setCurrentContext:context];
-    
+- (void)clear {
     // This application only creates a single default framebuffer which is already bound at this point.
     // This call is redundant, but needed if dealing with multiple framebuffers.
+    [EAGLContext setCurrentContext:context];
+    
     glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
+    //glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
     glViewport(0, 0, backingWidth, backingHeight);
-
+    
     // Clear, set color, set basic identity matrices.
-    if (shouldClear) {
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glEnableClientState(GL_VERTEX_ARRAY);
-        //glScalef(0.10f, 0.10f, 1.0f);
-    }
-    
-    // Draw it.
-    GLfloat resultNumDraws = [organism drawGLWithState:state];
-    
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glEnableClientState(GL_VERTEX_ARRAY);
+    //glScalef(0.10f, 0.10f, 1.0f);
+}
+
+- (void) present {
     glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
     [context presentRenderbuffer:GL_RENDERBUFFER_OES];
-    
+}    
+
+- (GLfloat)drawOrganism:(DrawOrganism*)organism withState:(DrawState*)state
+{
+    // Draw it.
+    GLfloat resultNumDraws = [organism drawGLWithState:state];
+
     return resultNumDraws;
 }
 
