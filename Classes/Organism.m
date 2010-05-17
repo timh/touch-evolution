@@ -35,29 +35,47 @@
 	
 	// what to do if the orgs are different length, in general?
 	int min = ([otherOrg->genes count] < [self->genes count]) ? [otherOrg->genes count] : [self->genes count];
-	for (int i = 0; i < min; i ++) {
-		id<Gene> gene1 = [genes objectAtIndex:i];
-		id<Gene> gene2 = [otherOrg->genes objectAtIndex:i];
-		
-		id<Gene> genePicked = nil;
-		if (random() % 2 == 0) {
-			genePicked = gene1;
-		}
-		else {
-			genePicked = gene2;
-		}
-		
-		// mutate
-        if (doMutate) {
+    int mateLength;
+    for (int i = 0; i < min; i += mateLength) {
+        Organism* orgPicked;
+        
+        if ([world mateLengthPercentage] > 0) {
+            // if mate length percentage is set at all, we will potentially 
+            // mate many genes at one time, in a string. we will go from 1 to
+            // the organism length times mateLengthPercentage.
             CGFloat r = (CGFloat)random()/(CGFloat)RAND_MAX;
-            if (r < world.mutationRate) {
-                genePicked = [genePicked mutate];
+            
+            mateLength = min * r * [world mateLengthPercentage];
+            if (mateLength < 1) {
+                mateLength = 1;
             }
-		}
-		
-		[result addGene:genePicked];
-	}
-	
+        }
+        else {
+            mateLength = 1;
+        }
+        
+        if (random() % 2 == 0) {
+            orgPicked = self;
+        }
+        else {
+            orgPicked = otherOrg;
+        }
+        
+        for (int inner = i; inner < i + mateLength && inner < min; inner ++) {
+            id<Gene> genePicked = (orgPicked == self) ? [genes objectAtIndex:inner] : [otherOrg->genes objectAtIndex:inner];
+            
+            // mutate
+            if (doMutate) {
+                CGFloat r = (CGFloat)random()/(CGFloat)RAND_MAX;
+                if (r < world.mutationRate) {
+                    genePicked = [genePicked mutate];
+                }
+            }
+                
+            [result addGene:genePicked];
+        }
+    }
+    
 	return result;
 }
 

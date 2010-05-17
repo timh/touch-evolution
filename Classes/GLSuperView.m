@@ -56,6 +56,7 @@
 		
         world = [[WorldParams alloc] init];
         world.mutationRate = .02f; // 2% mutation rate.
+        world.mateLengthPercentage = 1.0f; // 100% of org length is maximum mate size
 
         orgs = [NSMutableArray new];
         orgSelected = (BOOL*) malloc(sizeof(BOOL) * NUM_ORGS);
@@ -78,7 +79,7 @@
 {
     DrawOrganism* newOrg = [[DrawOrganism alloc] initEmpty];
     
-    for (int gene = 0; gene < 500; gene ++) {
+    for (int gene = 0; gene < 2000; gene ++) {
         DrawGene* newGene = [DrawGene randomGene];
         [newOrg addGene:newGene];
         [newGene release];
@@ -149,13 +150,10 @@
             [drawState scale:CGPointMake(.10f, .10f * STATUS_HEIGHT_PERCENTAGE)];
             DrawOrganism* org = [orgs objectAtIndex:orgIdx];
             
-            if (orgSelected[orgIdx]) {
-                [drawState setColor:red];
-            }
             if (orgIdx == 0) {
                 [orgView clear];
             }
-            [orgView drawOrganism:org withState:drawState];
+            [orgView drawOrganism:org withSelected:orgSelected[orgIdx] withState:drawState];
             if (orgX == ORGSX-1 && orgY == ORGSY-1) {
                 [orgView present];
             }

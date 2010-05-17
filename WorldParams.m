@@ -13,4 +13,6 @@
 
 @synthesize mutationRate;
 @synthesize mutInsertRate, mutDeleteRate, mutChangeRate;
+@synthesize mateLengthPercentage;
+
 @end

@@ -9,9 +9,11 @@
 @interface WorldParams : NSObject {
 	CGFloat mutationRate;
 	CGFloat mutInsertRate, mutDeleteRate, mutChangeRate;
+    CGFloat mateLengthPercentage;
 }
 
 @property(nonatomic, readwrite) CGFloat mutationRate;
+@property(nonatomic, readwrite) CGFloat mateLengthPercentage; // maximum mate length as percentage of organism length
 @property(nonatomic, readwrite) CGFloat mutInsertRate;
 @property(nonatomic, readwrite) CGFloat mutDeleteRate;
 @property(nonatomic, readwrite) CGFloat mutChangeRate;

@@ -32,7 +32,6 @@
     CGFloat minX = 0, minY = 0;
     CGFloat maxX = 0, maxY = 0;
     
-    GLfloat* color = drawState.color;
     glColor4f(drawState.color[0], drawState.color[1], drawState.color[2], drawState.color[3]);
 
     int numStepsExecuted = 0;
@@ -88,9 +87,15 @@
 				[drawState rotate:[machine pop]];
 				break;
 				
-			case RGBA:
-				//[drawState setColor:color];
+			case RGBA: {
+                GLfloat color[4];
+                for (int i = 0; i < 4; i ++) {
+                    color[i] = [machine pop];
+                }
+                
+                [drawState setColor:color];
 				break;
+            }
 				
 			case SCALE:
 				tempPoint.x = [machine pop] * 2;
@@ -123,6 +128,7 @@
                 upperCorner = [drawState transformedPoint:upperCorner];
                 rightCorner = [drawState transformedPoint:rightCorner];
                 
+                // update min/max if we're within normal drawing bounds.
                 if (drawState.translate.x > -10 && drawState.translate.x < 10 &&
                     drawState.translate.y > -10 & drawState.translate.y < 10) {
                     minX = minX < drawState.translate.x ? minX : drawState.translate.x;
@@ -138,6 +144,8 @@
                     (GLfloat) rightCorner.x + width, (GLfloat) rightCorner.y + height
                 };
                 
+                glColor4f(drawState.color[0], drawState.color[1], drawState.color[2], drawState.color[3]);
+
                 glVertexPointer(2, GL_FLOAT, 0, vertices);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 3);
                 

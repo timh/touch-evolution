@@ -65,10 +65,23 @@
     [context presentRenderbuffer:GL_RENDERBUFFER_OES];
 }    
 
-- (GLfloat)drawOrganism:(DrawOrganism*)organism withState:(DrawState*)state
+- (GLfloat)drawOrganism:(DrawOrganism*)organism withSelected:(BOOL)isSelected withState:(DrawState*)drawState
 {
     // Draw it.
-    GLfloat resultNumDraws = [organism drawGLWithState:state];
+    if (isSelected) {
+        glColor4f(0.1f, 0.3f, 0.3f, 0.5f);
+
+        CGFloat width = drawState.translate.x, height = drawState.translate.y;
+        GLfloat vertices[] = {
+            -.2 + width, -.1 + height,
+            -.2 + width, -.2 + height,
+             .2 + width, -.2 + height,
+             .2 + width, -.1 + height,
+        };
+        glVertexPointer(2, GL_FLOAT, 0, vertices);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
+    GLfloat resultNumDraws = [organism drawGLWithState:drawState];
 
     return resultNumDraws;
 }
