@@ -27,7 +27,7 @@
 
     
 - (GLfloat) drawGLWithState:(DrawState*)drawState {
-	MachineState* machine = [MachineState new];
+	MachineState* machine = [[MachineState alloc] init:4];
     
     CGFloat minX = 0, minY = 0;
     CGFloat maxX = 0, maxY = 0;
@@ -60,37 +60,57 @@
 			case POP:
 				[machine pop];
 				break;
-				
+                
+            case LOAD_R1:
+            case LOAD_R2:
+            case LOAD_R3:
+            case LOAD_R4: {
+                int reg = [gene type] - LOAD_R1;
+                [machine setReg:reg withValue:[gene number]];
+                break;
+            }
+                
+            case STORE_R1:
+            case STORE_R2:
+            case STORE_R3:
+            case STORE_R4:
+				NSLog(@"error - STORE not implemented");
+                break;
+                
 			case ADD:
-				[machine push:([machine pop] + [machine pop])];
+                [machine setReg:2
+                      withValue:[machine getReg:0] + [machine getReg:1]];
 				break;
 				
 			case SUBTRACT:
-				[machine push:([machine pop] - [machine pop])];
+                [machine setReg:2
+                      withValue:[machine getReg:0] - [machine getReg:1]];
 				break;
 				
 			case MULTI:
-				[machine push:([machine pop] * [machine pop])];
+                [machine setReg:2
+                      withValue:[machine getReg:0] * [machine getReg:1]];
 				break;
 				
 			case DIV:
-				[machine push:([machine pop] / [machine pop])];
+                [machine setReg:2
+                      withValue:[machine getReg:0] / [machine getReg:1]];
 				break;
 				
 			case TRANSLATE:
-				tempPoint.x = [machine pop];
-				tempPoint.y = [machine pop];
+				tempPoint.x = [machine getReg:2];
+				tempPoint.y = [machine getReg:3];
 				[drawState translate:tempPoint];
 				break;
 				
 			case ROTATE:
-				[drawState rotate:[machine pop]];
+				[drawState rotate:[machine getReg:3]];
 				break;
 				
 			case RGBA: {
                 GLfloat color[4];
                 for (int i = 0; i < 4; i ++) {
-                    color[i] = [machine pop];
+                    color[i] = [machine getReg:i];
                 }
                 
                 [drawState setColor:color];
@@ -98,21 +118,33 @@
             }
 				
 			case SCALE:
-				tempPoint.x = [machine pop] * 2;
-				tempPoint.y = [machine pop] * 2;
+				tempPoint.x = [machine getReg:2] * 2;
+				tempPoint.y = [machine getReg:3] * 2;
 				[drawState scale:tempPoint];
 				break;
 				
-			case CMP:
-				[machine compareTopTwo]; // will set the machine compare field too
+			case CMP: {
+                GLfloat first = [machine getReg:0];
+                GLfloat second = [machine getReg:1];
+                if (first < second) {
+                    [machine setReg:3 withValue:0];
+                }
+                else if (first == second) {
+                    [machine setReg:3 withValue:.5f];
+                }
+                else {
+                    [machine setReg:3 withValue:1.0f];
+                }
+                
 				break;
+            }
                 
             case JMP_LTE: {
-                CGFloat numIntoCode = [machine pop];
+                CGFloat numIntoCode = [machine getReg:3];
                 CGFloat floatIndexIntoCode = (CGFloat) [[self genes] count] * numIntoCode;
                 int indexIntoCode = ((int)floatIndexIntoCode) % [[self genes] count];
                 
-                if ([machine lastCompareResult] == LESSTHAN || [machine lastCompareResult] == EQUAL) {
+                if ([machine getReg:3] <= .5f) {
                     nextIndex = indexIntoCode;
                 }
                 break;

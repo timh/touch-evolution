@@ -12,25 +12,36 @@ typedef enum _DrawType {
 	NUMBER = 0,                     // push 1
 	CLONE1, CLONE2, CLONE3, CLONE4, // dup top 1, 2, 3, 4 (from current stack)
 	POP,                            // pop 1
+    
+    LOAD_R1,   // load reg 0, pop 1
+    LOAD_R2,   // load reg 1, pop 1
+    LOAD_R3,   // load reg 2, pop 1
+    LOAD_R4,   // load reg 3, pop 1
+    
+    STORE_R1,  // store from reg0, push
+    STORE_R2,  // store from reg1, push
+    STORE_R3,  // store from reg2, push
+    STORE_R4,  // store from reg3, push
 	
-	ADD,       // pops 2, push 1
-	SUBTRACT,  // pops 2, push 1
-	MULTI,     // pops 2, push 1
-	DIV,       // pops 2, push 1
+	ADD,       // r0, r1, result in r2
+	SUBTRACT,  // r0, r1, result in r2
+	MULTI,     // r0, r1, result in r2
+	DIV,       // r0, r1, result in r2
 
-	TRANSLATE, // pops 2 - x,y
-	ROTATE,    // pops 1 - degrees
-	RGBA,      // pops 4 - rgba
+	TRANSLATE, // r2, r3
+	ROTATE,    // r3
+	RGBA,      // r0, r1, r2, r3
 	
-	SCALE,     // pops 2 - x, y
+	SCALE,     // r2, r3
 	
-	CMP,       // compare - push 1: 0 <, .5 ==, > .99
-	JMP_LTE,   // based on compare, 
+	CMP,       // compare r0 & r1: set r3 = 0 for <, .5 for ==, > for .99
+	JMP_LTE,   // r2 = [0,1) where to jump to, r3 for previous cmp results
 	
 	DRAW,      // a triangle
 	
 	_MIN = NUMBER,
 	_MAX = DRAW,
+    _SIZE = _MAX - _MIN + 1
 } DrawType;
 	
 @interface DrawGene : NSObject<Gene> {
@@ -42,7 +53,6 @@ typedef enum _DrawType {
 @property(readonly, nonatomic) CGFloat	number;
 
 + (DrawGene*) randomGene;
-
 - (NSString*) description;
 - (NSString*) short_description;
 

@@ -57,6 +57,8 @@
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glEnableClientState(GL_VERTEX_ARRAY);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glScalef(0.10f, 0.10f, 1.0f);
 }
 

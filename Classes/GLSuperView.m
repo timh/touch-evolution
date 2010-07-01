@@ -79,7 +79,7 @@
 {
     DrawOrganism* newOrg = [[DrawOrganism alloc] initEmpty];
     
-    for (int gene = 0; gene < 2000; gene ++) {
+    for (int gene = 0; gene < 500; gene ++) {
         DrawGene* newGene = [DrawGene randomGene];
         [newOrg addGene:newGene];
         [newGene release];
@@ -108,9 +108,10 @@
     }
     
     for (int orgIdx = 0; orgIdx < NUM_ORGS; orgIdx ++) {
-        DrawOrganism* org = [orgs objectAtIndex:orgIdx];
-
         if (!orgSelected[orgIdx]) {
+            // if this organism isn't selected, and there are any selected, mate
+            // two of random orgs which were selected. if nothing is selected, just
+            // fill the spot with a new random organism.
             if ([keptOrgs count] > 0) {
                 DrawOrganism* org1 = [keptOrgs objectAtIndex:(random() % [keptOrgs count])];
                 DrawOrganism* org2 = [keptOrgs objectAtIndex:(random() % [keptOrgs count])];
@@ -129,7 +130,7 @@
 
 - (void)drawView:(id)sender
 {
-    GLfloat red[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+    //GLfloat red[] = { 1.0f, 0.0f, 0.0f, 1.0f };
     //GLfloat green[] = { 0.0f, 1.0f, 0.0f, 1.0f };
     //GLfloat yellow[] = { 1.0f, 1.0f, 0.0f, 1.0f };
         

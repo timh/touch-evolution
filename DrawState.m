@@ -82,19 +82,31 @@
 @implementation MachineState
 
 @synthesize stack;
-@synthesize lastCompareResult;
 
-- (MachineState*) init {
+- (MachineState*) init:(int)inNumRegisters {
 	if (self = [super init]) {
 		self->stack = [[NSMutableArray new] retain];
-		self->lastCompareResult = EQUAL;
+        self->numRegisters = inNumRegisters;
+        self->registers = (GLfloat*) calloc(sizeof(GLfloat) * numRegisters, 0);
 	}
 	return self;
 }
 
 - (void) dealloc {
 	[self->stack dealloc];
+    free(self->registers);
 	[super dealloc];
+}
+
+- (GLfloat) getReg:(int)regIdx {
+    //NSLog(@"get %d: %.2f\n", regIdx, registers[regIdx]);
+    return registers[regIdx];
+}
+
+- (GLfloat) setReg:(int)regIdx withValue:(GLfloat)value {
+    //NSLog(@"SET %d: %.2f = %.2f\n", regIdx, registers[regIdx], value);
+    registers[regIdx] = value;
+    return value;
 }
 
 - (GLfloat) push:(GLfloat)number {
@@ -125,21 +137,6 @@
 		// each time we add another, 'num' means a more recent entry onto
 		// the stack.
 		[self push:[self peek:num]];
-	}
-}
-
-- (void) compareTopTwo {
-	GLfloat one = [self pop];
-	GLfloat two = [self pop];
-	
-	if (one < two) {
-		self->lastCompareResult = LESSTHAN;
-	}
-	else if (one > two) {
-		self->lastCompareResult = GREATERTHAN;
-	}
-	else {
-		self->lastCompareResult = EQUAL;
 	}
 }
 

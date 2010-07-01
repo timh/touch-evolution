@@ -29,26 +29,21 @@
 @end
 
 
-typedef enum _CompareResult {
-	EQUAL,
-	LESSTHAN,
-	GREATERTHAN,
-} CompareResult;
-
 @interface MachineState : NSObject {
 	NSMutableArray * stack;
-	CompareResult lastCompareResult; // machine carry bit
+    int numRegisters;
+    GLfloat * registers;
 }
 
 @property(nonatomic, readonly) NSArray* stack;
-@property(nonatomic, readonly) CompareResult lastCompareResult;
 
-- (MachineState*) init;
+- (MachineState*) init:(int)numRegisters;
+- (GLfloat) getReg:(int)regIdx;
+- (GLfloat) setReg:(int)regIdx withValue:(GLfloat)value;
 - (GLfloat) push:(GLfloat)number;
 - (GLfloat) pop;
 - (GLfloat) peek:(int)index;
 - (void) clone:(int)num;
-- (void) compareTopTwo;
 
 @end
 
